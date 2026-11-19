@@ -13,15 +13,15 @@ buildscript {
         classpath 'gradle.plugin.org.openrepose:gradle-jaxb-plugin:2.5.0'
         classpath 'gradle.plugin.org.scoverage:gradle-scoverage:2.1.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
-        classpath 'org.github.ngbinh.scalastyle:gradle-scalastyle-plugin_2.11:1.0.1'
         classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:5.1.5'
         classpath 'com.netflix.nebula:gradle-git-scm-plugin:3.0.1'
         classpath 'com.netflix.nebula:gradle-ospackage-plugin:4.5.1'
-        classpath 'org.ajoberstar:gradle-git:1.7.2'
         classpath 'com.bmuschko:gradle-docker-plugin:3.2.1'
         classpath 'gradle.plugin.org.openrepose:gradle-linkchecker-plugin:1.0.0'
-        classpath 'gradle.plugin.io.github.http-builder-ng:http-plugin:0.1.1'
+        classpath('gradle.plugin.io.github.http-builder-ng:http-plugin:0.1.1') {
+            exclude group: 'com.burgstaller', module: 'okhttp-digest' // JCenter-only; unused (basic auth only)
+        }
         classpath 'org.owasp:dependency-check-gradle:8.0.1'
     }
 }
@@ -159,7 +159,7 @@ subprojects {
     apply plugin: 'org.openrepose.gradle.plugins.jaxb'
     apply plugin: 'checkstyle'
     apply plugin: 'codenarc'
-    apply plugin: 'scalaStyle'
+    // TODO(modernize): scalaStyle plugin was JCenter-only; restore with a maintained plugin
     apply plugin: 'com.github.hierynomus.license'
     apply plugin: 'jacoco'
     apply plugin: 'nebula.maven-publish'
@@ -330,17 +330,6 @@ subprojects {
         toolVersion = "1.0"
     }
 
-    //todo: write a good one of these plugins, because this is garbage
-    scalaStyle {
-        configLocation = "$rootDir/repose-aggregator/src/config/styles/scalastyle_config.xml"
-        includeTestSourceDirectory = true
-        source = "src/main/scala"
-        testSource = "src/test/scala"
-        failOnWarning = true
-        quiet = true
-    }
-
-    check.dependsOn scalaStyle
 
     license {
         header file("$rootDir/repose-aggregator/src/config/license/LICENSE.txt")
