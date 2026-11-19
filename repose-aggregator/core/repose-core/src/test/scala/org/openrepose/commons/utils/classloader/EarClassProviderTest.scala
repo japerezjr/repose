@@ -27,7 +27,7 @@ import com.typesafe.config.ConfigFactory
 import javax.servlet.Filter
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.apache.logging.log4j.{Level, LogManager}
 import org.junit.runner.RunWith
 import org.scalatestplus.junit.JUnitRunner

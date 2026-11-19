@@ -33,7 +33,7 @@ import org.apache.http.message.BasicHttpResponse
 import org.apache.http.protocol.HttpContext
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.junit.runner.RunWith
 import org.mockito.Matchers.{any, contains, eq => isEq}
 import org.mockito.Mockito._

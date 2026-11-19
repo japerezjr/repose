@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.{Filter, ServletContext}
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.mockito.Matchers.{any, isA, eq => isEq}

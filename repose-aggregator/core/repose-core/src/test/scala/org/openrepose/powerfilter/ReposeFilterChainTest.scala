@@ -28,7 +28,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.servlet.{Filter, FilterChain}
 import org.apache.logging.log4j.core.LoggerContext
 import org.apache.logging.log4j.core.config.Configurator
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.apache.logging.log4j.{Level, LogManager}
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor

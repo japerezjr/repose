@@ -28,7 +28,7 @@ import javax.ws.rs.core.HttpHeaders._
 import org.apache.http.client.utils.DateUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.junit.runner.RunWith
 import org.mockito.Matchers.{eq => mEq, _}
 import org.mockito.Mockito._
