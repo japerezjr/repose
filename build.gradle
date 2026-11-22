@@ -162,7 +162,8 @@ subprojects {
     apply plugin: 'org.openrepose.gradle.plugins.jaxb'
     apply plugin: 'checkstyle'
     apply plugin: 'codenarc'
-    // TODO(modernize): scalaStyle plugin was JCenter-only; restore with a maintained plugin
+    // TODO(modernize): the scalaStyle plugin was JCenter-only, so Scala style checks no longer run in `check`.
+    // Restore with a maintained plugin; the config is still at repose-aggregator/src/config/styles/scalastyle_config.xml.
     apply plugin: 'com.github.hierynomus.license'
     apply plugin: 'jacoco'
     apply plugin: 'nebula.maven-publish'
@@ -363,7 +364,6 @@ subprojects {
         sourceSets = sourceSets.matching {it.name != 'generated' && it.name != 'scoverage' && it.name != 'testScoverage'}
         toolVersion = "1.0"
     }
-
 
     license {
         header file("$rootDir/repose-aggregator/src/config/license/LICENSE.txt")
