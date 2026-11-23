@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.core.exc.StreamConstraintsException
 import com.typesafe.scalalogging.StrictLogging
 import gnieh.diffson.playJson._
 import org.openrepose.commons.utils.io.stream.ServletInputStreamWrapper
@@ -67,7 +68,8 @@ class BodyPatcherFilter @Inject()(configurationService: ConfigurationService)
           logger.debug("Applying json patches on the request")
           val originalValue: JsValue = Try(PJson.parse(httpRequest.getInputStream))
             .recover({
-              case jpe: JsonParseException =>
+              // StreamConstraintsException: the body exceeds Jackson's parser limits (e.g., string length, nesting depth)
+              case jpe@(_: JsonParseException | _: StreamConstraintsException) =>
                 logger.debug("Bad Json body", jpe)
                 throw BodyUnparseableException("Couldn't parse the body as json", jpe)
             }).get
@@ -101,7 +103,7 @@ class BodyPatcherFilter @Inject()(configurationService: ConfigurationService)
 
                 val contentValue = Try(PJson.parse(wrappedResponse.getOutputStreamAsInputStream))
                   .recover({
-                    case jpe: JsonParseException =>
+                    case jpe@(_: JsonParseException | _: StreamConstraintsException) =>
                       logger.debug("Bad Json body", jpe)
                       throw BodyUnparseableException("Couldn't parse the body as json", jpe)
                   }).get
