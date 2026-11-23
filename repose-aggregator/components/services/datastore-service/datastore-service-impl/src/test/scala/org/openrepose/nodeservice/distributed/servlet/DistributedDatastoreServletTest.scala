@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletResponse._
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.Mockito.when

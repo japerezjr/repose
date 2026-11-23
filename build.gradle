@@ -31,6 +31,9 @@ import io.github.httpbuilderng.http.HttpTask
 
 import static groovyx.net.http.NativeHandlers.Encoders
 
+//this will let us access the a couple of the versions while still keeping a single source of truth
+project.ext.versionProperties = new Properties()
+project.ext.versionProperties.load(new FileInputStream("$rootDir/versions.properties"))
 apply plugin: 'nebula.gradle-git-scm'
 apply plugin: 'io.github.http-builder-ng.http-plugin'
 
@@ -186,6 +189,37 @@ subprojects {
     check.dependsOn integrationTest
     integrationTest.mustRunAfter test
 
+    // Recommendations do not win version conflicts, so these transitive versions are forced here.
+    // flume-ng-sdk 1.11 (via log4j-flume-ng) requests libthrift 0.14.1, which breaks jaeger-core 0.27 at runtime.
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'org.apache.thrift' && details.requested.name == 'libthrift') {
+                details.useVersion rootProject.versionProperties.getProperty('thriftVersion')
+                details.because 'jaeger-core 0.27 requires libthrift 0.12.x'
+            }
+            // Keep every Jackson module on one version; transitive 2.9.x modules (e.g. jackson-module-scala
+            // from api-checker) refuse to run against a newer jackson-databind.
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion(details.requested.name == 'jackson-annotations'
+                        ? rootProject.versionProperties.getProperty('jacksonAnnotationsVersion')
+                        : rootProject.versionProperties.getProperty('jacksonVersion'))
+            }
+            // Patch-level CVE fixes for flume-ng-sdk 1.11 transitives (same minor line, API compatible)
+            if (details.requested.group == 'io.netty' && details.requested.version?.startsWith('4.1.')) {
+                details.useVersion rootProject.versionProperties.getProperty('netty4Version')
+            }
+            if (details.requested.group == 'org.apache.avro' && details.requested.version?.startsWith('1.11.')) {
+                details.useVersion rootProject.versionProperties.getProperty('avroVersion')
+            }
+            if (details.requested.group == 'org.xerial.snappy' && details.requested.name == 'snappy-java') {
+                details.useVersion rootProject.versionProperties.getProperty('snappyVersion')
+            }
+            if (details.requested.group == 'org.yaml' && details.requested.name == 'snakeyaml') {
+                details.useVersion rootProject.versionProperties.getProperty('snakeyamlVersion')
+                details.because 'swagger-parser requires the SnakeYAML 1.x API'
+            }
+        }
+    }
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -500,6 +534,3 @@ dependencyRecommendations {
     propertiesFile file: file('versions.properties')
 }
 
-//this will let us access the a couple of the versions while still keeping a single source of truth
-project.ext.versionProperties = new Properties()
-project.ext.versionProperties.load(new FileInputStream("$rootDir/versions.properties"))

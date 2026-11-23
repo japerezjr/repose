@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse._
 import com.rackspace.httpdelegation.{HttpDelegationHeaderNames, HttpDelegationManager}
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.hamcrest.Matchers.{endsWith, hasProperty}
 import org.junit.runner.RunWith
 import org.mockito.Matchers.{any, anyString, argThat, same, eq => eql}

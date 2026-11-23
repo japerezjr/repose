@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse.{SC_FORBIDDEN, SC_METHOD_NOT_ALLOW
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
-import org.apache.logging.log4j.test.appender.ListAppender
+import org.apache.logging.log4j.core.test.appender.ListAppender
 import org.junit.runner.RunWith
 import org.mockito.{ArgumentCaptor, Matchers, Mockito}
 import org.openrepose.commons.config.resource.{ConfigurationResource, ConfigurationResourceResolver}

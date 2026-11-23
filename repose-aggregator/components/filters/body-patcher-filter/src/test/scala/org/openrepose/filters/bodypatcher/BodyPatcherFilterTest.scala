@@ -19,6 +19,7 @@
  */
 package org.openrepose.filters.bodypatcher
 
+import com.fasterxml.jackson.core.StreamReadConstraints
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.servlet.{FilterChain, FilterConfig}
 
@@ -204,6 +205,30 @@ class BodyPatcherFilterTest
       response.getErrorMessage shouldBe "Body was unparseable as specified content type"
     }
 
+    it("should return a 400 when a request body string exceeds the JSON parser's maximum string length") {
+      val request = basicRequest("/foo", "banana/json")
+      val oversized = "a" * (StreamReadConstraints.DEFAULT_MAX_STRING_LEN + 1)
+      request.setContent(s"""{"big":"$oversized"}""".getBytes)
+      val response: MockHttpServletResponse = new MockHttpServletResponse()
+
+      filter.doWork(request, response, new MockFilterChain())
+
+      response.getStatus shouldBe 400
+      response.getErrorMessage shouldBe "Body was unparseable as specified content type"
+    }
+
+    it("should return a 400 when a request body exceeds the JSON parser's maximum nesting depth") {
+      val request = basicRequest("/foo", "banana/json")
+      val depth = StreamReadConstraints.DEFAULT_MAX_DEPTH + 1
+      request.setContent(("[" * depth + "]" * depth).getBytes)
+      val response: MockHttpServletResponse = new MockHttpServletResponse()
+
+      filter.doWork(request, response, new MockFilterChain())
+
+      response.getStatus shouldBe 400
+      response.getErrorMessage shouldBe "Body was unparseable as specified content type"
+    }
+
     it("should apply the appropriate patches to the response with simple path match") {
       val request = basicRequest("/foo", "banana/json")
       val response: MockHttpServletResponse = new MockHttpServletResponse()
@@ -291,6 +316,24 @@ class BodyPatcherFilterTest
           val chainedResponse: HttpServletResponse = invocation.getArguments()(1).asInstanceOf[HttpServletResponse]
           chainedResponse.setContentType("application/json")
           chainedResponse.getWriter.print("this is not json, why would you send this and mark it as json?")
+          chainedResponse.flushBuffer()
+        }
+      } )
+
+      intercept[BodyUnparseableException] {
+        filter.doWork(request, response, chain)
+      }
+    }
+    it("should throw an exception when the response body exceeds the JSON parser's maximum nesting depth") {
+      val request = basicRequest("/foo", "banana/json")
+      val response: MockHttpServletResponse = new MockHttpServletResponse()
+      val chain: FilterChain = mock[FilterChain]
+      val depth = StreamReadConstraints.DEFAULT_MAX_DEPTH + 1
+      when(chain.doFilter(any(classOf[HttpServletRequest]), any(classOf[HttpServletResponse]))).thenAnswer(new Answer[Unit] {
+        override def answer(invocation: InvocationOnMock): Unit = {
+          val chainedResponse: HttpServletResponse = invocation.getArguments()(1).asInstanceOf[HttpServletResponse]
+          chainedResponse.setContentType("application/json")
+          chainedResponse.getWriter.print("[" * depth + "]" * depth)
           chainedResponse.flushBuffer()
         }
       } )
